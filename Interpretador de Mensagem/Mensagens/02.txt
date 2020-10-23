@@ -1,0 +1,42 @@
+Interpretar a mensagem de evento
+
+                             0   1   2   3   4   5    6   7   8   9  10  11 12 13 14 15  16 17 18
+     0   1    2    3    4   5   6   7   8    9  10 11 12 13 14 15 16 17 18  19 20 21 22 23
+    7B 18 BD 24 42 42 42 42 33 34 30 34 30 31 30 30 30 00 00 1A 4E 02 01 9F
+
+Então o programa deverá dizer ao usuário:
+
+    É um pacote de Evento!
+    - 7B = Header
+    - 18 = Tamanho do pacote
+    - BD = Sequencia do pacote
+    - 24 = Pacote de Evento
+    - 42 42 42 42 33 34 30 34 30 31 30 30 30 00 00 1A 4E 02 01 = DADOS
+    - 9F = Checksum ou CRC.
+
+Interpretação dos DADOS
+
+    - 42 42 42 42 33 34 30 34 30 31 30 30 30 00 00 1A 4E 02 01 = DADOS
+
+    - 42 42 42 42 = CONTA, 4 dígitos, no caso BBBB
+    - 33 = Qualificador Evento, no caso, 3. Apenas 1 dígito
+    - 34 30 34 = 3 dígitos pra o código do Evento , no caso, 404
+    - 30 31 = Partição, são 2 dígitos, no caso, 01
+    - 30 30 30 = Argumento 3 3 dígitos, no caso, 000
+    - 00 00 1A 4E = Contador do evento, 4 dígitos. 
+    - 02 = Status da partição - Não fazer nada por enquanto
+    - 01 = Problemas, se 01 =  Há problemas, se 00 = não há problemas
+
+Caso a mensagem informada for qualquer coisa fora do combinado, mostrar a mensagem ao usuário:
+
+    Mensagem inválida!
+
+Agora devem ser interpretados Keep-alive e Evento
+Mais exemplos válidos de Evento
+
+    7B 18 AB 24 42 42 42 42 31 34 30 31 30 31 30 30 30 00 00 1A 46 02 01 86
+    7B 18 AE 24 42 42 42 42 33 34 30 34 30 31 30 30 30 00 00 1A 47 02 01 85
+    7B 18 B0 24 42 42 42 42 31 35 37 30 30 31 30 30 31 00 00 1A 48 02 01 95
+    7B 18 B4 24 42 42 42 42 31 35 37 30 30 31 30 30 36 00 00 1A 4A 02 01 94
+
+

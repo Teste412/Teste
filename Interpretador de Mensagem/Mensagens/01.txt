@@ -1,0 +1,90 @@
+INTERPRETADOR DE MENSAGENS.
+
+Desenvolver um código que irá solicitar ao usuário a mesangem a ser interpretada;
+Receber a mensagem e interpretá-la de acordo com o combinado.
+Combinado de mensagens:
+ 
+ - Toda mensagem tem a seguinte estrutura:
+     - A B C D DADOS K
+     - A = Header, um único caracter indicando o inicio da mensagem. Dado por '{' ou 0x7B ( escrita em hexadecimal )
+     - B = Tamanho do pacote, um único caracter indicando o tamanho da mensagem. Por exemplo, 5 indica que a mensagem tem 5 caracteres, ou bytes.
+        O tamanho é contado do campo 'A' até o campo 'K'
+     - C = Sequencia do pacote, um byte indicando o número sequencial do pacote. Pode ser qualquer valor aqui, 1, 2, 3, 50, 100, 255. ( Válidos 0x01 à 0xFF )
+     - D = Tipo do pacote ou comando, um byte especificando qual é este pacote enviado. Cada tipo de pacote tem um valor único pra ser identificado, por exemplo, 0x40 = Pacote de Keep-alive.
+     - DADOS = Informação da mensagem, pode vir ou não. Este é o único campo que pode NÃO EXISTIR.
+     - K = Checksum ou CRC. Ignorar por enquanto. Apenas deve considerar que este pacote sempre será enviado e pode ter qualquer valor ( 0x00 à 0xFF )
+
+Então se o usuário informar a mensagem esperada, o programa deverá dizer qual é a mensagem e cada um do seus campos.
+Por exemplo, abaixo está a mensagem de Keep-alive.
+
+    7B 05 20 40 FF
+
+Então o programa deverá dizer ao usuário:
+
+    É um pacote de Keep-alive!
+    - 7B = Header
+    - 05 = Tamanho do pacote
+    - 20 = Sequencia do pacote
+    - 40 = Pacote de Keep-alive.
+    - FF = Checksum ou CRC.
+
+Caso a mensagem informada for qualquer coisa fora do combinado, mostrar a mensagem ao usuário:
+
+    Mensagem inválida!
+
+Por hora a única mensagem a ser interpretada, é o keep-alive, 7B 05 20 40 FF.
+Mais exemplos válidos de keep-alive
+
+    7B 05 07 40 2F
+    7B 05 1B 40 03
+    7B 05 FF 40 55
+    7B 05 30 40 4B
+
+Mensagens inválidas
+
+    7B 05 30 40 4B 7B 05 30 40 4B
+    7B 05 30 40
+    05 30 40 4B
+    Arroz
+    22
+
+NOTA¹: o que está escrito com 0x representa os caracteres em hexadecimal.
+Escrever em hexadecimal é só uma forma de representação do mesmo valor.
+Por exemplo, o caracter '{' é o código ASCII 123. 
+123 é código dele em DECIMAL, em hexadecimal é o valor 0x7B.
+Quando escrevemos aqui pra exemplos, usamos o 0x na frente do valor.
+Quando inserimos uma mensagem ao programa, colocamos o valor direto, 7B.
+
+NOTA²: O usuário sempre irá informar o valor em hexadecimal, conforme o exemplo acima ( 7B 05 20 40 FF)
+
+DICA: o usuário PODE informar a mensagem com espacos, como nos exemplos acima. Seu código deverá ser capaz de remover os caracteres de espaços.
+( Se não souber, busque no Google como remover espaços de uma String em Java ).
+
+Utilize o seguinte código para transformar a String recebida em hexadecimal para um array de bytes
+------------------------------------------------------------------
+public static byte[] fromHexString(String rawData) {
+
+        int len = rawData.length();
+        byte[] data = new byte[len / 2];
+
+        for (int i = 0; i < len; i += 2) {
+            int nextPosition = i + 1;
+            data[i / 2] = (byte) ((Character.digit(rawData.charAt(i), 16) << 4)
+                    + Character.digit(rawData.charAt(nextPosition), 16));
+        }
+
+        return data;
+}
+------------------------------------------------------------------
+
+Então seu código ficará assim:
+
+String mensagemRecebidaPeloUsuario = lerEntrada();
+byte[] mensagemAInterpretar =  fromHexString( mensagemRecebidaPeloUsuario );
+
+byte header = mensagemAInterpretar[0];
+if( header == 0x7B ){
+  // continua....
+}
+
+
